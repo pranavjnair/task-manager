@@ -3,10 +3,11 @@ package com.taskmanager.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class User {
-    private String id, email, firstName, lastName, createTimestamp, updateTimestamp;
+    private String id,password, email, firstName, lastName, createTimestamp, updateTimestamp;
 
-    @JsonIgnore
-    private String password;
+    public User(){
+        super();
+    }
 
     public User(String id, String password, String email, String firstName, String lastName) {
         this.id = id;
@@ -70,5 +71,18 @@ public class User {
 
     public void setUpdateTimestamp(String updateTimestamp) {
         this.updateTimestamp = updateTimestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", createTimestamp='" + createTimestamp + '\'' +
+                ", updateTimestamp='" + updateTimestamp + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }
