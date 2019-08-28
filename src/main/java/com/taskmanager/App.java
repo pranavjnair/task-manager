@@ -13,17 +13,25 @@ public class App {
     static Logger log = LoggerFactory.getLogger(App.class);
 
     public static void main(String args[]) {
-        log.info("starting server");
-
         try {
-            int serverPort = 8080;
-            HttpServer server = HttpServer.create(new InetSocketAddress(serverPort), 0);
-            server.createContext("/users", new UserRequestHandler());
+            Integer port = getPort();
+            log.info("Starting server on port::{}", port);
+            HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+            server.createContext("/users", new UserRequestHandler());  //forward user requests to UserRequestHandler
             server.start();
         } catch (Exception e) {
             log.error("Unable to start server. Error: {}", e);
         }
+        log.info("Started server");
+    }
 
-        log.info("started server");
+    private static Integer getPort() {
+        int serverPort = 8080; //Default to this port
+        try {
+            serverPort = Integer.parseInt(System.getenv("SERVER_PORT")); //get port from env var
+        } catch (Exception e) {
+            //use default
+        }
+        return serverPort;
     }
 }

@@ -1,9 +1,13 @@
 package com.taskmanager.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
-    private String id,password, email, firstName, lastName, createTimestamp, updateTimestamp;
+    private String id, email, firstName, lastName, createTimestamp, updateTimestamp;
+
+    private String password;
 
     public User(){
         super();
