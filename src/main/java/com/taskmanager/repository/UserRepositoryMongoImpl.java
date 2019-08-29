@@ -17,12 +17,11 @@ import org.slf4j.LoggerFactory;
 
 import static com.mongodb.client.model.Filters.*;
 
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * Singleton
+ * user repository that handles the creating and reading of a user. Also contains a singleton implementation.
  */
 public class UserRepositoryMongoImpl implements UserRepository {
     private static Logger log = LoggerFactory.getLogger(UserRepositoryMongoImpl.class);
@@ -36,11 +35,16 @@ public class UserRepositoryMongoImpl implements UserRepository {
     private ObjectMapper objectMapper = new ObjectMapper();
 
 
-    //prevent other classes from instantiating this object
+    /**
+     * part of the singleton implementation - prevent other classes from instantiating this object
+     */
     private UserRepositoryMongoImpl() {
     }
 
-    //synchronized is added for thread safety
+    /**
+     * part of the singleton implementation - synchronized is added for thread safety
+     * @return returns one instance of UserRepositoryMongoImpl so the class is only initialized once
+     */
     synchronized public static UserRepositoryMongoImpl getInstance() {
         if (instance == null) {
             try {
@@ -64,6 +68,10 @@ public class UserRepositoryMongoImpl implements UserRepository {
         return instance;
     }
 
+    /**
+     * Inserts a user into the collection
+     * @param user - user with parameters
+     */
     @Override
     public void create(User user) {
         Document document = new Document("_id", user.getId())
@@ -78,15 +86,20 @@ public class UserRepositoryMongoImpl implements UserRepository {
         userCollection.insertOne(document);
     }
 
+    /**
+     * Reads a user from the database and returns an optional user
+     * @param id - id_ stored in the collection of the user
+     * @return - Optional<user> that contains the user
+     */
     @Override
     public Optional<User> read(String id) {
         try {
-            Document document = userCollection.find(eq("_id", id)).first();
+            Document document = userCollection.find(eq("_id", id)).first(); // finds user information with id
             if (document == null) {
-                return Optional.empty();
+                return Optional.empty(); // returns optional empty instead of returning null
             }
             String documentJson = document.toJson();
-            User user = objectMapper.readValue(documentJson, User.class);
+            User user = objectMapper.readValue(documentJson, User.class); // reads value using Jackson
             return Optional.of(user);
         } catch (Exception e) {
             log.error("Cannot find user. User:{}. Error:{}", id, e);

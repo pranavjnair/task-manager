@@ -5,6 +5,8 @@
 ### Setting up dev environment
 Setup these environment variables before starting the app.
 
+
+
 ```
 SERVER_PORT=???   (defaults to 8080)
 MONGO_HOST_NAME=???

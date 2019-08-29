@@ -17,7 +17,9 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-
+/**
+ * Handles GET and POST using the HttpHandler class
+ */
 public class UserRequestHandler implements HttpHandler {
     private static Logger log = LoggerFactory.getLogger(UserRequestHandler.class);
 
@@ -30,8 +32,12 @@ public class UserRequestHandler implements HttpHandler {
     private UserService userService = new UserService();
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * Handles GET and POST using a switch statement
+     * @param httpExchange - handler for the HTTP requests
+     */
     @Override
-    public void handle(HttpExchange httpExchange) throws IOException {
+    public void handle(HttpExchange httpExchange) {
         switch (httpExchange.getRequestMethod()) {
             case "GET":
                 getUser(httpExchange);
@@ -45,6 +51,10 @@ public class UserRequestHandler implements HttpHandler {
         httpExchange.close();
     }
 
+    /**
+     * Request that processes method not allowed
+     * @param httpExchange - Handler for HTTP requests
+     */
     private void processUnknownRequest(HttpExchange httpExchange) {
         try {
             httpExchange.sendResponseHeaders(HTTP_METHOD_NOT_ALLOWED, 0);
@@ -54,6 +64,10 @@ public class UserRequestHandler implements HttpHandler {
         }
     }
 
+    /**
+     * Request that processes duplicate users
+     * @param httpExchange - Handler for HTTP requests
+     */
     private void processDuplicate(HttpExchange httpExchange) {
         try {
             httpExchange.sendResponseHeaders(HTTP_DUPLICATE, 0);  //
@@ -63,6 +77,10 @@ public class UserRequestHandler implements HttpHandler {
         }
     }
 
+    /**
+     * Request that processes errors
+     * @param httpExchange - Handler for HTTP requests
+     */
     private void processError(HttpExchange httpExchange) {
         try {
             httpExchange.sendResponseHeaders(HTTP_ERROR, 0);
@@ -72,6 +90,10 @@ public class UserRequestHandler implements HttpHandler {
         }
     }
 
+    /**
+     * Request that processes methods not found
+     * @param httpExchange - Handler for HTTP requests
+     */
     private void processNotFound(HttpExchange httpExchange) {
         try {
             httpExchange.sendResponseHeaders(HTTP_NOT_FOUND, 0);
@@ -81,7 +103,10 @@ public class UserRequestHandler implements HttpHandler {
         }
     }
 
-
+    /**
+     * Gets the user and sends a response in json format
+     * @param httpExchange - Handler for HTTP requests
+     */
     private void getUser(HttpExchange httpExchange) {
         try {
             log.info("url:{}", httpExchange.getRequestURI().getPath());
@@ -107,7 +132,10 @@ public class UserRequestHandler implements HttpHandler {
     }
 
 
-
+    /**
+     * Posts the user
+     * @param httpExchange - Handler for HTTP requests
+     */
     private void postUser(HttpExchange httpExchange) {
         log.info("in PostUser:{}", httpExchange.getRequestURI().getPath());
         try {
@@ -129,6 +157,11 @@ public class UserRequestHandler implements HttpHandler {
         }
     }
 
+    /**
+     * helper method for getting request body
+     * @param httpExchange - Handler for HTTP requests
+     * @return - returns the String of the byteArrayOutputStream
+     */
     private String getRequestBodyAsString(HttpExchange httpExchange) {
         try {
             InputStream inputStream = httpExchange.getRequestBody();
@@ -147,6 +180,12 @@ public class UserRequestHandler implements HttpHandler {
         }
     }
 
+    /**
+     * Request that processes HTTP 200s
+     * @param httpExchange - Handler for HTTP requests
+     * @param json - string with json formatting
+     * @throws IOException - exception that doesn't need to be dealt with
+     */
     private void sendResponse(HttpExchange httpExchange, String json) throws IOException {
         httpExchange.sendResponseHeaders(HTTP_OK, json.getBytes().length);
         OutputStream outputStream = httpExchange.getResponseBody();
