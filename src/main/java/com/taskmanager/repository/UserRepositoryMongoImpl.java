@@ -43,19 +43,23 @@ public class UserRepositoryMongoImpl implements UserRepository {
     //synchronized is added for thread safety
     synchronized public static UserRepositoryMongoImpl getInstance() {
         if (instance == null) {
-            // getting server config from environment variables
-            String hostName = System.getenv("MONGO_HOST_NAME");
-            Integer portNumber = Integer.parseInt(System.getenv("MONGO_PORT_NUMBER"));
-            String databaseName = System.getenv("MONGO_DBNAME");
+            try {
+                // getting server config from environment variables
+                String hostName = System.getenv("MONGO_HOST_NAME");
+                Integer portNumber = Integer.parseInt(System.getenv("MONGO_PORT_NUMBER"));
+                String databaseName = System.getenv("MONGO_DBNAME");
 
-            instance = new UserRepositoryMongoImpl();
-            instance.mongoClient = MongoClients.create(
-                    MongoClientSettings.builder()
-                            .applyToClusterSettings(builder ->
-                                    builder.hosts(Arrays.asList(new ServerAddress(hostName, portNumber)))) // 27017 is the default port
-                            .build());
-            instance.mongoDatabase = instance.mongoClient.getDatabase(databaseName);
-            instance.userCollection = instance.mongoDatabase.getCollection("users");
+                instance = new UserRepositoryMongoImpl();
+                instance.mongoClient = MongoClients.create(
+                        MongoClientSettings.builder()
+                                .applyToClusterSettings(builder ->
+                                        builder.hosts(Arrays.asList(new ServerAddress(hostName, portNumber)))) // 27017 is the default port
+                                .build());
+                instance.mongoDatabase = instance.mongoClient.getDatabase(databaseName);
+                instance.userCollection = instance.mongoDatabase.getCollection("users");
+            }catch (Exception e) {
+                throw new AppException("Unable to connect to mongodb.  Possible missing environment variables MONGO_HOST_NAME, MONGO_PORT_NUMBER, MONGO_DBNAME", e);
+            }
         }
         return instance;
     }
